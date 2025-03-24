@@ -6,10 +6,6 @@ An **autoregressive (AR) model** predicts each token based on all the previous o
 
 P(x₁, x₂, ..., xₙ) = P(x₁) · P(x₂ | x₁) · P(x₃ | x₁, x₂) ··· P(xₙ | x₁, ..., xₙ₋₁)
 
-yaml
-复制
-编辑
-
 This means GPT-2 generates text **one token at a time**, from left to right, and **never looks ahead**.
 
 ---
@@ -38,10 +34,6 @@ Each Token ID is converted into a **768-dimensional vector** using a learned emb
 
 Embedding(Token ID) = E[Token ID]
 
-yaml
-复制
-编辑
-
 This gives us:
 - A continuous representation of discrete tokens
 - Input shape: `seq_len × d_model`
@@ -51,12 +43,7 @@ This gives us:
 ## 🧠 Self-Attention in GPT-2
 
 Self-Attention helps the model determine **which tokens should pay attention to which others**. It computes:
-
 Attention(Q, K, V) = Softmax(QKᵀ / √dₖ) · V
-
-markdown
-复制
-编辑
 
 Each input token is projected into:
 - `Q`: Query
@@ -68,10 +55,6 @@ These are obtained via linear transformations:
 Q = X · W_Q
 K = X · W_K
 V = X · W_V
-
-yaml
-复制
-编辑
 
 For **single-head attention**:  
 `W_Q, W_K, W_V ∈ ℝ^{768 × 64}`
@@ -89,18 +72,11 @@ In **Multi-Head Attention**, multiple attention "heads" operate in parallel:
 
 Concat(head₁, ..., head₁₂) ∈ ℝ^{seq_len × 768}
 
-vbnet
-复制
-编辑
-
 Then projected back to original space using:
+
 
 Final Output = Multi-Head Output · W_O
 W_O ∈ ℝ^{768 × 768}
-
-yaml
-复制
-编辑
 
 > Note: `W_O` is a trainable parameter learned during model training.
 
@@ -116,10 +92,6 @@ M_{i,j} =
 0 if j ≤ i
 -∞ if j > i
 
-yaml
-复制
-编辑
-
 Applied before Softmax to prevent "seeing the future".
 
 **Why?**  
@@ -132,10 +104,6 @@ To ensure GPT-2 predicts token `x_t` using only `x₁, ..., xₜ₋₁`.
 After attention, GPT-2 uses a two-layer **position-wise feed-forward network**:
 
 FFN(x) = GELU(x · W₁ + b₁) · W₂ + b₂
-
-yaml
-复制
-编辑
 
 - Applies to each token independently  
 - Allows complex feature transformation  
@@ -173,3 +141,4 @@ Each step:
 | **Embedding + Tokenization**| Converts input text to numerical vectors                 |
 
 ---
+
