@@ -76,8 +76,8 @@ def train():
     tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
     tokenizer.pad_token = tokenizer.eos_token
     
-    tiny_config = GPT2Config(model_size="tiny")  # Uses predefined tiny config
-    model = GPT2Model(tiny_config).to("cuda")
+    model_config = GPT2Config(model_size="tiny")  # Uses predefined tiny config
+    model = GPT2Model(model_config).to("cuda")
     
     optimizer = optim.AdamW(model.parameters(), lr=config.learning_rate)
     criterion = nn.CrossEntropyLoss(ignore_index=-100)
