@@ -43,50 +43,25 @@ hf_model_name = {
     "xl": "gpt2-xl"
 }[args.model_size]
 
-try:
-    # Try loading custom trained weights first
-    model.load_state_dict(torch.load(f"hf_{args.model_size}_gpt2.pth"))
-    print(f"✅ Loaded custom {args.model_size} model weights")
-except FileNotFoundError:
-    # Fallback to Hugging Face weights
-    print(f"⚠️  Custom weights not found, loading from Hugging Face {hf_model_name}")
-    hf_model = AutoModelForCausalLM.from_pretrained(hf_model_name)
-    model = load_hf_weights(model, hf_model)
+# try:
+#     # Try loading custom trained weights first
+#     model.load_state_dict(torch.load(f"hf_{args.model_size}_gpt2.pth"))
+#     print(f"✅ Loaded custom {args.model_size} model weights")
+# except FileNotFoundError:
+#     # Fallback to Hugging Face weights
+#     print(f"⚠️  Custom weights not found, loading from Hugging Face {hf_model_name}")
+#     hf_model = AutoModelForCausalLM.from_pretrained(hf_model_name)
+#     model = load_hf_weights(model, hf_model)
+
+# Always load from Hugging Face
+print(f"📦 Loading pretrained weights from Hugging Face model: {hf_model_name}")
+hf_model = AutoModelForCausalLM.from_pretrained(hf_model_name)
+model = load_hf_weights(model, hf_model)
 
 # Device configuration
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 model.eval()
-
-# def generate_text(prompt, max_length=50, temperature=0.7):
-#     """
-#     Improved text generation with temperature sampling
-#     """
-#     input_ids = tokenizer.encode(prompt, return_tensors="pt").to(device)
-    
-#     # Limit input to 10 tokens
-#     if input_ids.shape[1] > 10:
-#         input_ids = input_ids[:, :10]
-#         print("\n[WARNING] Input truncated to 10 tokens")
-
-#     # Generate text
-#     with torch.no_grad():
-#         for _ in range(max_length):
-#             outputs = model(input_ids)
-#             logits = outputs[:, -1, :]
-            
-#             # Apply temperature
-#             logits = logits / temperature
-#             probabilities = torch.nn.functional.softmax(logits, dim=-1)
-            
-#             # Sample from distribution
-#             next_token = torch.multinomial(probabilities, 1)
-#             input_ids = torch.cat([input_ids, next_token], dim=1)
-
-#             if next_token == tokenizer.eos_token_id:
-#                 break
-
-#     return tokenizer.decode(input_ids[0], skip_special_tokens=True)
 
 def generate_text(prompt, max_length=50, temperature=0.9, top_p=0.92):
     """

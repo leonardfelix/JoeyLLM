@@ -17,84 +17,43 @@ import math
  
 class GPT2Config:
     """
-    Configuration class for GPT-2 model
-    
-    Attributes:
-        vocab_size: Number of tokens in vocabulary (default: 50257)
-        max_seq_len: Maximum sequence length (default: 1024)
-        hidden_dim: Hidden dimension size (default: 768 for small)
-        num_heads: Number of attention heads (default: 12 for small)
-        num_layers: Number of transformer layers (default: 12 for small)
-        dropout: Dropout probability (default: 0.1)
+    Configuration class for GPT-2 model with preset sizes
     """
-    def __init__(self,
-                 vocab_size=50257,
-                 max_seq_len=1024,
-                 hidden_dim=768,
-                 num_heads=12,
-                 num_layers=12,
-                 dropout=0.1):
-        self.vocab_size = vocab_size
-        self.max_seq_len = max_seq_len
-        self.hidden_dim = hidden_dim
-        self.num_heads = num_heads
-        self.num_layers = num_layers
-        self.dropout = dropout
- 
-# class MultiHeadAttention(nn.Module):
-#     """
-#     Multi-head attention layer (HF-compatible implementation)
-    
-#     Implements combined QKV projection like original GPT-2.
-#     Matches Hugging Face's parameter names for direct weight loading.
-#     """
-#     def __init__(self, config):
-#         super().__init__()
-#         self.hidden_dim = config.hidden_dim
-#         self.num_heads = config.num_heads
-#         self.head_dim = self.hidden_dim // self.num_heads
- 
-#         # Combined QKV projection (matches HF's 'c_attn' layer)
-#         self.c_attn = nn.Linear(self.hidden_dim, 3 * self.hidden_dim)
+    model_configs = {
+        "tiny":    {"vocab_size": 50257, "max_seq_len": 1024, "hidden_dim": 512,  "num_heads": 8,  "num_layers": 2,  "dropout": 0.1},
+        "small":   {"vocab_size": 50257, "max_seq_len": 1024, "hidden_dim": 768,  "num_heads": 12, "num_layers": 12, "dropout": 0.1},
+        "medium":  {"vocab_size": 50257, "max_seq_len": 1024, "hidden_dim": 1024, "num_heads": 16, "num_layers": 24, "dropout": 0.1},
+        "large":   {"vocab_size": 50257, "max_seq_len": 1024, "hidden_dim": 1280, "num_heads": 20, "num_layers": 36, "dropout": 0.1},
+        "xl":      {"vocab_size": 50257, "max_seq_len": 1024, "hidden_dim": 1600, "num_heads": 25, "num_layers": 48, "dropout": 0.1}
+    }
+
+    def __init__(self, model_size=None, **kwargs):
+        """
+        Initialize configuration with either:
+        - A predefined model size (tiny/small/medium/large/xl)
+        - Custom parameters via keyword arguments
         
-#         # Output projection (matches HF's 'c_proj' layer)
-#         self.c_proj = nn.Linear(self.hidden_dim, self.hidden_dim)
-        
-#         # Regularization
-#         self.dropout = nn.Dropout(config.dropout)
- 
-#     def forward(self, x):
-#         """
-#         Args:
-#             x: Input tensor [batch_size, seq_len, hidden_dim]
+        Example custom config:
+        GPT2Config(hidden_dim=512, num_heads=8, num_layers=4)
+        """
+        if model_size:
+            assert model_size in self.model_configs, f"Invalid model size: {model_size}"
+            self.__dict__.update(self.model_configs[model_size])
+        else:
+            # Default values
+            defaults = {
+                "vocab_size": 50257,
+                "max_seq_len": 1024,
+                "hidden_dim": 768,
+                "num_heads": 12,
+                "num_layers": 12,
+                "dropout": 0.1
+            }
+            # Update with provided kwargs
+            defaults.update(kwargs)
+            self.__dict__.update(defaults)
             
-#         Returns:
-#             Output tensor [batch_size, seq_len, hidden_dim]
-#         """
-#         batch_size, seq_len, _ = x.size()
- 
-#         # Combined QKV projection [batch, seq_len, 3*hidden_dim]
-#         qkv = self.c_attn(x)
-        
-#         # Split into Q, K, V [each shape: batch_size, num_heads, seq_len, head_dim]
-#         q, k, v = qkv.split(self.hidden_dim, dim=2)
-#         q = q.view(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)
-#         k = k.view(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)
-#         v = v.view(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)
- 
-#         # Attention scores [batch_size, num_heads, seq_len, seq_len]
-#         attn_scores = (q @ k.transpose(-2, -1)) / math.sqrt(self.head_dim)
-#         attn_probs = nn.functional.softmax(attn_scores, dim=-1)
-#         attn_probs = self.dropout(attn_probs)
- 
-#         # Context vector [batch_size, num_heads, seq_len, head_dim]
-#         context = attn_probs @ v
-        
-#         # Re-combine heads [batch_size, seq_len, hidden_dim]
-#         context = context.transpose(1, 2).contiguous().view(batch_size, seq_len, -1)
-        
-#         # Final projection
-#         return self.c_proj(context)
+        self.model_size = model_size  # Track if using predefined size
 
 class MultiHeadAttention(nn.Module):
     def __init__(self, config):
