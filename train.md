@@ -30,8 +30,8 @@ This will:
 
 Load the custom GPT-2 model with chosen configuration
 
-Load 25% of the Project_Gutenberg_Australia dataset
+Load 25% of the Project_Gutenberg_Australia dataset. Update configs to use more.
 
-Begin training with full logging to Weights & Biases
+Begin training with logging to Weights & Biases
 
 Save checkpoints after every epoch
