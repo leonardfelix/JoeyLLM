@@ -84,12 +84,12 @@ def train_epoch(model: torch.nn.Module,
 
 def main():
     """
-    Main training execution with pure custom initialization
+    Main training execution
     """
     model_cfg = ModelConfig(model_size="small")
     train_cfg = TrainingConfig(
-        batch_size=8,
-        epochs=1000,
+        batch_size=1,
+        epochs=1,
         learning_rate=3e-4,
         save_dir="./checkpoints",
         sample_fraction=0.25,
