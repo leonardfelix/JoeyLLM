@@ -55,13 +55,13 @@ class TrainingConfig:
     
     Attributes:
         batch_size (int): Samples per batch (default: 8)
-        epochs (int): Total training epochs (default: 1000)
+        epochs (int): Total training epochs (default: 100)
         learning_rate (float): Initial learning rate (default: 3e-4)
         weight_decay (float): L2 regularization (default: 0.01)
         warmup_steps (int): Linear warmup steps (default: 1000)
         log_interval (int): Loss logging frequency (default: 100)
         save_dir (str): Model checkpoint directory (default: "./checkpoints")
-        sample_fraction (float): Dataset sampling ratio (default: 0.25)
+        sample_fraction (float): Dataset sampling ratio (default: 0.20)
         use_fsdp (bool): Enable Fully Sharded Data Parallel (default: False)
         use_ddp (bool): Enable Distributed Data Parallel (default: False)
         mixed_precision (bool): Use FP16 training (default: True)
@@ -70,13 +70,13 @@ class TrainingConfig:
         max_grad_norm (float): Gradient clipping threshold (default: 1.0)
     """
     batch_size: int = 8
-    epochs: int = 1000
+    epochs: int = 100
     learning_rate: float = 3e-4
     weight_decay: float = 0.01
     warmup_steps: int = 1000
-    log_interval: int = 10
+    log_interval: int = 100
     save_dir: str = "./checkpoints"
-    sample_fraction: float = 0.25
+    sample_fraction: float = 0.20
     use_fsdp: bool = False
     use_ddp: bool = False
     mixed_precision: bool = True
